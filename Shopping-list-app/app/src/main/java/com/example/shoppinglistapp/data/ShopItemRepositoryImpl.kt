@@ -17,7 +17,7 @@ object ShopItemRepositoryImpl : ShopItemRepository {
     }
 
     override fun getShopItemList(): List<ShopItem> {
-        TODO("Not yet implemented")
+        return shopItems.toList()
     }
 
     override fun getShopItem(id: Int): ShopItem {
