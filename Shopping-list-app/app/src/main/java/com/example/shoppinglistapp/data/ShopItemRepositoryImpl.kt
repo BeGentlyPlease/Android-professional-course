@@ -2,6 +2,7 @@ package com.example.shoppinglistapp.data
 
 import com.example.shoppinglistapp.domain.entity.ShopItem
 import com.example.shoppinglistapp.domain.repository.ShopItemRepository
+import java.lang.RuntimeException
 
 object ShopItemRepositoryImpl : ShopItemRepository {
 
@@ -20,7 +21,9 @@ object ShopItemRepositoryImpl : ShopItemRepository {
     }
 
     override fun getShopItem(id: Int): ShopItem {
-        TODO("Not yet implemented")
+        return shopItems.find {
+            it.id == id
+        } ?: throw RuntimeException("Shop item with id: $id not found!")
     }
 
     override fun updateShopItemUseCase(item: ShopItem) {
