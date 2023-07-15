@@ -8,8 +8,13 @@ object ShopItemRepositoryImpl : ShopItemRepository {
 
     private val shopItems = mutableListOf<ShopItem>()
 
+    private var shopItemAutoIncrementId = 0
+
     override fun addShopItem(item: ShopItem) {
-        TODO("Not yet implemented")
+        if (item.id == ShopItem.UNDEFINED_ID) {
+            item.id = shopItemAutoIncrementId++
+        }
+        shopItems.add(item)
     }
 
     override fun deleteShopItem(item: ShopItem) {
