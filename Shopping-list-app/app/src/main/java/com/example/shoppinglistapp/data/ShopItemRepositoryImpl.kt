@@ -13,7 +13,7 @@ object ShopItemRepositoryImpl : ShopItemRepository {
     }
 
     override fun deleteShopItem(item: ShopItem) {
-        TODO("Not yet implemented")
+        shopItems.remove(item)
     }
 
     override fun getShopItemList(): List<ShopItem> {
