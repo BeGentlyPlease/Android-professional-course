@@ -1,4 +1,6 @@
 package com.example.shoppinglistapp.domain.usecase
 
-abstract class ShopItemUseCase {
+import com.example.shoppinglistapp.domain.repository.ShopItemRepository
+
+abstract class ShopItemUseCase(protected val shopItemRepository: ShopItemRepository) {
 }

@@ -1,9 +1,10 @@
 package com.example.shoppinglistapp.domain.usecase
 
 import com.example.shoppinglistapp.domain.entity.ShopItem
+import com.example.shoppinglistapp.domain.repository.ShopItemRepository
 
-class GetShopItemList : ShopItemUseCase() {
+class GetShopItemList(shopItemRepository: ShopItemRepository) : ShopItemUseCase(shopItemRepository) {
     fun getShopItemList(): List<ShopItem> {
-        TODO()
+        return shopItemRepository.getShopItemList()
     }
 }
