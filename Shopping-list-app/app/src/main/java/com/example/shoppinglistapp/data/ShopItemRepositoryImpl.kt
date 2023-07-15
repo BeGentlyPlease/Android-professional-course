@@ -2,7 +2,6 @@ package com.example.shoppinglistapp.data
 
 import com.example.shoppinglistapp.domain.entity.ShopItem
 import com.example.shoppinglistapp.domain.repository.ShopItemRepository
-import java.lang.RuntimeException
 
 object ShopItemRepositoryImpl : ShopItemRepository {
 
@@ -32,8 +31,8 @@ object ShopItemRepositoryImpl : ShopItemRepository {
     }
 
     override fun updateShopItemUseCase(item: ShopItem) {
-        TODO("Not yet implemented")
+        val oldElement = getShopItem(item.id)
+        deleteShopItem(oldElement)
+        addShopItem(item)
     }
-
-
 }
