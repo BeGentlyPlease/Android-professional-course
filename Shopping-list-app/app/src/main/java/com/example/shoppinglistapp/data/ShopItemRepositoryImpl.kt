@@ -9,9 +9,15 @@ object ShopItemRepositoryImpl : ShopItemRepository {
 
     private val shopItemsLiveData = MutableLiveData<List<ShopItem>>()
 
-    private val shopItems = mutableListOf<ShopItem>()
+    private val shopItems = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
 
     private var shopItemAutoIncrementId = 0
+
+    init {
+        for (i in 0..10) {
+            addShopItem(ShopItem(i.toString(), i.toFloat(), true))
+        }
+    }
 
     override fun addShopItem(item: ShopItem) {
         if (item.id == ShopItem.UNDEFINED_ID) {
