@@ -1,8 +1,10 @@
 package com.example.shoppinglistapp.presentation.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.presentation.adapter.ShopItemListAdapter
@@ -27,11 +29,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        val rvShopItemList = findViewById<RecyclerView>(R.id.rv_shop_item_list)
-        with(rvShopItemList) {
-            shopItemListAdapter = ShopItemListAdapter()
-            adapter = shopItemListAdapter
+        shopItemListAdapter = ShopItemListAdapter().apply {
+            onItemClickListener = {
+                Log.d("ShopItemClickListener", it.toString())
+            }
+            onItemLongClickListener = {
+                viewModel.changeShopItemEnableState(it)
+            }
         }
+
+        findViewById<RecyclerView>(R.id.rv_shop_item_list).apply {
+            adapter = shopItemListAdapter
+            setupSwipeListener(this)
+        }
+    }
+
+    private fun setupSwipeListener(recyclerView: RecyclerView) {
+        val callback = object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val shopItem = shopItemListAdapter.shopItemList[viewHolder.adapterPosition]
+                viewModel.deleteShopItem(shopItem)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
 }
