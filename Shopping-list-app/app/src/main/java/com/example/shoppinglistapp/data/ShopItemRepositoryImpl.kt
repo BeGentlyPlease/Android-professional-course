@@ -14,7 +14,7 @@ object ShopItemRepositoryImpl : ShopItemRepository {
     private var shopItemAutoIncrementId = 0
 
     init {
-        for (i in 0..10) {
+        for (i in 0..1000) {
             addShopItem(ShopItem(i.toString(), i.toFloat(), true))
         }
     }
