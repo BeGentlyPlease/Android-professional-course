@@ -47,7 +47,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_shop_item_save"
+        android:id="@+id/btn_save_shop_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:insetLeft="4dp"
