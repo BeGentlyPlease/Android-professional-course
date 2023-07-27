@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.domain.entity.ShopItem
@@ -29,8 +30,14 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         initViews()
+        addTextChangeListeners()
+        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+        launchMode()
+        observeViewModel()
+    }
+
+    private fun launchMode() {
         when (screenMode) {
             MODE_ADD -> launchAddMode()
             MODE_EDIT -> launchEditMode()
@@ -38,11 +45,55 @@ class ShopItemActivity : AppCompatActivity() {
     }
 
     private fun launchAddMode() {
-        TODO("Not yet implemented")
+        btnSaveShopItem.setOnClickListener {
+            viewModel.addShopItem(
+                etShopItemName.text.toString(),
+                etShopItemCount.text.toString()
+            )
+        }
     }
 
     private fun launchEditMode() {
-        TODO("Not yet implemented")
+        viewModel.getShopItem(shopItemId)
+        viewModel.shopItem.observe(this) {
+            etShopItemName.setText(it.name)
+            etShopItemCount.setText(it.count.toString())
+        }
+        btnSaveShopItem.setOnClickListener {
+            viewModel.updateShopItem(
+                etShopItemName.text.toString(),
+                etShopItemCount.text.toString()
+            )
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.errorInputName.observe(this) {
+            tilShopItemName.error = if (it) {
+                getString(R.string.name_input_error)
+            } else {
+                null
+            }
+        }
+        viewModel.errorInputCount.observe(this) {
+            tilShopItemCount.error = if (it) {
+                getString(R.string.count_input_error)
+            } else {
+                null
+            }
+        }
+        viewModel.shouldCloseScreen.observe(this) {
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    private fun addTextChangeListeners() {
+        etShopItemName.doOnTextChanged { _, _, _, _ ->
+            viewModel.resetErrorInputName()
+        }
+        etShopItemCount.doOnTextChanged { _, _, _, _ ->
+            viewModel.resetErrorInputCount()
+        }
     }
 
     private fun parseIntent() {
