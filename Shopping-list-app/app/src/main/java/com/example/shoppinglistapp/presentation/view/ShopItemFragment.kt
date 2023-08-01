@@ -1,5 +1,6 @@
 package com.example.shoppinglistapp.presentation.view
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ class ShopItemFragment : Fragment() {
     private lateinit var btnSaveShopItem: Button
 
     private lateinit var viewModel: ShopItemViewModel
+    private lateinit var onEditingFinishListener: OnEditingFinishListener
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
@@ -33,6 +35,15 @@ class ShopItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_shop_item, container, false)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishListener) {
+            onEditingFinishListener = context
+        } else {
+            throw RuntimeException("Activity must implement OnEditingFinishListener")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +106,7 @@ class ShopItemFragment : Fragment() {
             }
         }
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressedDispatcher?.onBackPressed()
+            onEditingFinishListener.onEditingFinished()
         }
     }
 
@@ -132,6 +143,10 @@ class ShopItemFragment : Fragment() {
         etShopItemName = view.findViewById(R.id.et_shop_item_name)
         etShopItemCount = view.findViewById(R.id.et_shop_item_count)
         btnSaveShopItem = view.findViewById(R.id.btn_save_shop_item)
+    }
+
+    interface OnEditingFinishListener {
+        fun onEditingFinished()
     }
 
     companion object {
