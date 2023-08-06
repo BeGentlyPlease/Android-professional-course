@@ -24,7 +24,9 @@ class GameFinishedFragment : Fragment() {
     }
 
     private fun parseArgs() {
-        result = requireArguments().getSerializable(KEY_RESULT) as GameResult
+        requireArguments().getParcelable<GameResult>(KEY_RESULT)?.let {
+            result = it
+        }
     }
 
     override fun onCreateView(
@@ -44,6 +46,9 @@ class GameFinishedFragment : Fragment() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        binding.buttonRetry.setOnClickListener {
+            retryGame()
+        }
     }
 
     override fun onDestroyView() {
@@ -65,7 +70,7 @@ class GameFinishedFragment : Fragment() {
         fun newInstance(result: GameResult): GameFinishedFragment {
             return GameFinishedFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(KEY_RESULT, result)
+                    putParcelable(KEY_RESULT, result)
                 }
             }
 
