@@ -2,9 +2,10 @@ package com.example.word_composition.presentation.viewmodel
 
 import android.app.Application
 import android.os.CountDownTimer
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.word_composition.R
 import com.example.word_composition.data.repository.GameRepositoryImpl
 import com.example.word_composition.domain.entity.GameResult
@@ -14,9 +15,10 @@ import com.example.word_composition.domain.entity.Question
 import com.example.word_composition.domain.usecase.GenerateQuestionUseCase
 import com.example.word_composition.domain.usecase.GetGameSettingsUseCase
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val context = application
+class GameViewModel(
+    private val application: Application,
+    private val level: Level
+) : ViewModel() {
 
     private val repository = GameRepositoryImpl
 
@@ -58,22 +60,24 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private var timer: CountDownTimer? = null
 
-    private lateinit var level: Level
     private lateinit var gameSettings: GameSettings
 
     private var countOfRightAnswers = 0
     private var countOfQuestions = 0
 
+    init {
+        startGame()
+    }
 
-    fun startGame(level: Level) {
-        getGameSetting(level)
+
+    private fun startGame() {
+        getGameSetting()
         startTimer()
         generateQuestion()
         updateProgress()
     }
 
-    private fun getGameSetting(level: Level) {
-        this.level = level
+    private fun getGameSetting() {
         this.gameSettings = getGameSettingsUseCase(level)
         _minPercent.value = gameSettings.minPercentOfRightAnswers
     }
@@ -88,7 +92,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val percent = calculatePercentOfRightAnswers()
         _percentOfRightAnswers.value = percent
         _progressAnswers.value = String.format(
-            context.getString(R.string.progress_answers),
+            application.getString(R.string.progress_answers),
             countOfRightAnswers,
             gameSettings.minCountOfRightAnswers
         )
@@ -157,5 +161,18 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         private const val SECONDS_IN_MINUTES = 60
         private const val MILLS_IN_SECONDS = 1000L
+    }
+}
+
+class GameViewModelFactory(
+    private val level: Level,
+    private val application: Application,
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(GameViewModel::class.java)) {
+            return GameViewModel(application, level) as T
+        } else {
+            throw RuntimeException("Unknown view model class $modelClass")
+        }
     }
 }

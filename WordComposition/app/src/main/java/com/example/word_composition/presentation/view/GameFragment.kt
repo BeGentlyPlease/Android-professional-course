@@ -9,22 +9,23 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import com.example.word_composition.R
 import com.example.word_composition.databinding.FragmentGameBinding
 import com.example.word_composition.domain.entity.GameResult
 import com.example.word_composition.domain.entity.Level
 import com.example.word_composition.presentation.viewmodel.GameViewModel
+import com.example.word_composition.presentation.viewmodel.GameViewModelFactory
 
 class GameFragment : Fragment() {
 
     private lateinit var level: Level
 
+    private val viewModelFactory by lazy {
+        GameViewModelFactory(level, requireActivity().application)
+    }
+
     private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            AndroidViewModelFactory(requireActivity().application)
-        )[GameViewModel::class.java]
+        ViewModelProvider(this, viewModelFactory)[GameViewModel::class.java]
     }
 
     private val tvOptions by lazy {
@@ -66,7 +67,6 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeViewModel()
-        viewModel.startGame(level)
         setClickListenersToOptions()
     }
 

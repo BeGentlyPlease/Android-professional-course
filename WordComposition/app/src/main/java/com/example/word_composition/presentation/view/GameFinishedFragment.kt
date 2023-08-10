@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.word_composition.R
 import com.example.word_composition.databinding.FragmentGameFinishedBinding
 import com.example.word_composition.domain.entity.GameResult
 
@@ -29,6 +30,18 @@ class GameFinishedFragment : Fragment() {
         }
     }
 
+    private fun setupClickListeners() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                retryGame()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        binding.buttonRetry.setOnClickListener {
+            retryGame()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,14 +53,45 @@ class GameFinishedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                retryGame()
-            }
+        setupClickListeners()
+        bindViews()
+    }
+
+    private fun bindViews() {
+        with(binding) {
+            emojiResult.setImageResource(getSmileResId())
+            tvRequiredAnswers.text = String.format(
+                getString(R.string.required_score),
+                result.gameSettings.minCountOfRightAnswers
+            )
+            tvScoreAnswers.text = String.format(
+                getString(R.string.score_answers),
+                result.countOfRightAnswers
+            )
+            tvRequiredPercentage.text = String.format(
+                getString(R.string.required_percentage),
+                result.gameSettings.minPercentOfRightAnswers,
+            )
+            tvScorePercentage.text = String.format(
+                getString(R.string.score_percentage),
+                getPercentOfRightAnswers()
+            )
         }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-        binding.buttonRetry.setOnClickListener {
-            retryGame()
+    }
+
+    private fun getPercentOfRightAnswers() = with(result) {
+        if (countOfQuestions == 0) {
+            0
+        } else {
+            ((countOfRightAnswers / countOfQuestions.toDouble()) * 100).toInt()
+        }
+    }
+
+    private fun getSmileResId(): Int {
+        return if (result.winner) {
+            R.drawable.ic_smile
+        } else {
+            R.drawable.ic_sad
         }
     }
 
