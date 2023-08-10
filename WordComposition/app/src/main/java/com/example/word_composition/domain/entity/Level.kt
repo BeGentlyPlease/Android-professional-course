@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 enum class Level : Parcelable {
-    Test,
+    TEST,
     EASY,
     NORMAL,
     HARD
